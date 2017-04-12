@@ -49,14 +49,18 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppBuilderMembershipServiceExtensions.cs" />
+    <Compile Include="CustomSqlMembershipProvider.cs" />
     <Compile Include="DataAccess\Entities\Membership.cs" />
     <Compile Include="DataAccess\Entities\MembershipSecurity.cs" />
     <Compile Include="DataAccess\MembershipContext.cs" />

@@ -74,7 +74,7 @@ namespace IdentityServer3.Contrib.Membership
             {
                 new Claim(JwtClaimTypes.Subject, user.UserId.ToString("N")),
                 new Claim(JwtClaimTypes.PreferredUserName, user.UserName),
-                new Claim(JwtClaimTypes.Email, user.Email),
+                new Claim(JwtClaimTypes.Email, user.Email??string.Empty),
 
                 new Claim(JwtClaimTypes.IdentityProvider, options.IdentityProvider),
                 new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),

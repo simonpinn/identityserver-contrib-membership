@@ -14,7 +14,8 @@ namespace IdentityServer3.Contrib.Membership
     {
         private readonly IMembershipRepository membershipRepository;
         private readonly IMembershipPasswordHasher membershipPasswordHasher;
-        
+        private readonly CustomSqlMembershipProvider membershipProvider;
+
         /// <summary>Constructor</summary>
         /// <param name="membershipRepository">Membership Repository</param>
         /// <param name="membershipPasswordHasher">Membership Password Hasher</param>
@@ -22,6 +23,7 @@ namespace IdentityServer3.Contrib.Membership
         {
             this.membershipRepository = membershipRepository.ThrowIfNull(nameof(membershipRepository));
             this.membershipPasswordHasher = membershipPasswordHasher.ThrowIfNull(nameof(membershipPasswordHasher));
+            membershipProvider = new CustomSqlMembershipProvider();
         }
 
         /// <summary>Gets a User by their Unique Identifier</summary>
@@ -81,11 +83,18 @@ namespace IdentityServer3.Contrib.Membership
                                                          .ConfigureAwait(false);
             if (userSecurity == null) return false;
 
-            // Encrypt the password given using the same encryption data stored against the user
-            var encryptedPassword = membershipPasswordHasher.EncryptPassword(password, userSecurity.PasswordFormat, userSecurity.Salt);
-
-            // The Encrypted password should match the password held in the datastore
-            var isPasswordCorrect = userSecurity.Password == encryptedPassword;
+            var isPasswordCorrect = false;
+            if (userSecurity.PasswordFormat == 2)
+            {
+                var decrypted = membershipProvider.GetClearTextPassword(userSecurity.Password);
+                isPasswordCorrect = decrypted == password;
+            }
+            else
+            {
+                // Encrypt the password given using the same encryption data stored against the user
+                var encryptedPassword = membershipPasswordHasher.EncryptPassword(password, userSecurity.PasswordFormat, userSecurity.Salt);
+                isPasswordCorrect = userSecurity.Password == encryptedPassword;
+            }
 
             // Update our user with any failed password attempts, resets etc.
             if (!isPasswordCorrect ||
